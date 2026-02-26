@@ -25,7 +25,11 @@ def _string_id_to_uuid(string_id: str) -> str:
 
 class QdrantVectorStore:
     def __init__(self, url: str, collection_name: str, embedder: BedrockEmbedder, timeout: int = 30, api_key: Optional[str] = None):
-        self.client = QdrantClient(url=url, timeout=timeout, prefer_grpc=False, api_key=api_key)
+        logger.info(f"Initializing QdrantVectorStore with url: {url}, collection_name: {collection_name}")
+        host = url.split("//")[1]
+        port = 443 if "https" in url else 6333
+        https = True if "https" in url else False
+        self.client = QdrantClient(host=host, port=port, timeout=timeout, api_key=api_key, https= https)
         self.embedder = embedder
         self.collection_name = collection_name
         self._ensure_collection()
